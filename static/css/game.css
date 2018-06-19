@@ -1,0 +1,47 @@
+/* body{
+  background-color: #39261f;
+} */
+#tx{
+  /*border-left: 2px solid #000;*/
+  /*border-right: 2px solid #000;*/
+  /*border-bottom: 2px solid #000;*/
+}
+#ta{
+  font-size: 60px;
+}
+.game-dialog{
+  margin-top:100px;
+}
+.star-area{
+  width:80%;
+  height:78px;
+  margin:0 auto;
+  position: relative;
+}
+.g-star-img{
+  position: absolute;
+  z-index: 99;
+}
+.y-star-img{
+  position: absolute;
+  z-index: 100;
+}
+.first-star{
+  left: 0;
+  top: 0;
+}
+.second-star{
+  left: 36%;
+  top: 0;
+}
+.third-star{
+  right: 0;
+  top: 0;
+}
+.fail-area p{
+  position: relative;
+  font-size: 20px;
+  color: gray;
+  width: 50%;
+  margin: 0 100px;
+}

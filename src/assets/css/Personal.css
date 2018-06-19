@@ -1,0 +1,207 @@
+body,html{
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color:#333333;
+}
+.bg-img{
+  height: 520px;
+  width:100%;
+  background-image: url(../images/scene01_bg.jpg);
+  background-repeat: no-repeat;
+  background-position: 0 -150px !important;
+  background-size: cover !important;
+  /*filter:alpha(Opacity=70);*/
+  /*-moz-opacity:0.7;*/
+  /*opacity: 0.7;*/
+  z-index: -1;
+}
+.header{
+  background: #39261f;
+  margin:0 !important;
+  position: absolute;
+  width:100%;
+  z-index: 2;
+  top:0;
+}
+.header .el-row{
+  height:50px ;
+}
+.el-row {
+  margin-bottom: 0px;
+
+}
+.header div{
+  height:50px;
+
+}
+.header img{
+  height:80%;
+  margin:5px;
+}
+.el-col {
+  border-radius: 4px;
+}
+
+
+.btn_menu{
+  margin-left:11px;
+}
+a{
+  text-decoration: none;
+  color:black;
+}
+.bg_information{
+
+  margin-left:7%;
+  position: absolute;
+  width:92%;
+  z-index: 2;
+  top:100px;
+
+}
+.picname_bg{
+  background-image: url(../images/profile_picname_bg.png) ;
+  height: 265px;
+  width: 190px;
+  text-align:center;
+}
+.picname{
+  width:180px;
+  margin-top:15px;
+  padding-bottom:15px;
+}
+.star_bg{
+  height: 63px;
+  width: 167px;
+  background-image: url(../images/profile_star_bg.png) ;
+  background-size: contain;
+  margin-top:20px;
+
+}
+.star{
+  height: 50px;
+  margin-left: 4px;
+  margin-top:5px;
+
+}
+.star_num{
+  margin-right: 50px;
+ float:right;
+  margin-top:16px;
+}
+.star_num h3{
+  color: #fffde3;
+  font-family: "Exo 2", sans-serif;
+  font-weight: 800;
+  font-size: 35px;
+}
+.bg_information span{
+  margin-left: 8px;
+  font-size: 36px;
+  line-height: 43.2px;
+  color:white;
+}
+.unclock{
+  text-align:center;
+}
+.edit{
+  margin-top:20px;
+  height: 47px;
+  width: 189px;
+  background-image:url(../images/sprite_edit_profile_notext.png) ;
+  background-repeat: no-repeat;
+  font-family: "Open Sans", sans-serif;
+  font-weight: 200;
+}
+.unlock_message{
+  min-height: 30px;
+  margin-top: 13px;
+  font-size: 23.8px;
+  line-height: 1.2em;
+  font-weight: 600;
+
+}
+.unclock_meter{
+
+  background-image: url(../images/profile_challenges_scale.png);
+  height: 58px;
+  background-size:cover;
+
+}
+.play-bt{
+
+  margin:0 auto;
+  width: 157px;
+  height: 74px;
+  background-image: url(../images/sprite_playnow_notext.png);
+  background-position: 0 0;
+  background-repeat: no-repeat;
+  color: #d6aa83;
+  padding-top: 18px;
+  font-size: 28px;
+  font-weight: 600;
+
+}
+.main{
+  position: absolute;
+  z-index:2;
+  top:450px;
+  width:80%;
+  margin-left:10%;
+  border-radius: 7px;
+  -webkit-box-shadow: -1px 2px 10px 0px rgba(0,0,0,0.35);
+  -moz-box-shadow: -1px 2px 10px 0px rgba(0,0,0,0.35);
+  box-shadow: -1px 2px 10px 0px rgba(0,0,0,0.35);
+  background-image: url(../images/profile_content_bg.png);
+  background-color: white;
+  background-size: cover;
+}
+.main h3{
+  font-size: 24px;
+  margin-top:20px;
+  margin-left:3%;
+}
+.user_achievement{
+  display: inline-block;
+  min-width: 75px;
+  height: 100px;
+  width: 100px;
+  vertical-align: top;
+  margin:15px;
+}
+.user_achievement img{
+  width:88px;
+  height:88px;
+}
+.el-dropdown-menu{
+  width:130px;
+}
+.el-dropdown-menu__item{
+  font-color:#ffffff;
+  font-size:20px;
+}
+.className_bg{
+  height: 63px;
+  background-image: url(../images/profile_class_bg.png) ;
+  background-repeat: no-repeat;
+  background-size: contain;
+  margin-top:20px;
+
+}
+.className_bg span{
+  line-height:60px;
+  font-size: 23px;
+}
+.class_name{
+  margin-right: 42px;
+  float:right;
+  margin-top:18px;
+}
+.class_name h3{
+  color: #fffde3;
+  font-family: "Exo 2", sans-serif;
+  font-weight: 400;
+  font-size: 20px;
+}
+

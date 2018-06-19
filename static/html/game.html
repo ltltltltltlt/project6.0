@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="chrome">
+  <title>Document</title>
+  <!-- 引入jquery-1.11.1.min.js这个包的原因是为了使用jquery中ajax，因为vue原来是没有ajax -->
+  <script src="/static/js/jquery-1.11.1.min.js"></script>
+
+  <script src="/static/js/phaser.min.js"></script>
+  <script src="/static/js/vue.min.js"></script>
+  <link rel="stylesheet" href="/static/css/game.css">
+  <link rel="stylesheet" href="/static/css/animate.min.css">
+  <link rel="stylesheet" href="/static/css/element.css">
+  <script src="/static/js/element.js"></script>
+  <script src="/static/js/run.js"></script>
+  <script src="/static/js/ruler.js"></script>
+  <script src="/static/js/step.js"></script>
+  <script src="/static/js/public.js"></script>
+  <script src="/static/js/turn.js"></script>
+  <script src="/static/js/collision.js"></script>
+  <script src="/static/js/state.js"></script>
+  <script src="/static/js/initData.js"></script>
+  <style>
+    body{
+      margin:0;
+      padding: 0;
+      width:100%;
+      overflow-y:hidden;
+    }
+    [v-clock]{
+      display:none
+    }
+    #container {
+      float: left;
+    }
+    #tx{
+      float: left;
+    }
+    #inp textarea {
+      font-size: 30px;
+      border-color: white green green white;
+      outline:none;
+    }
+    #button{
+      float: left;
+      width:150px;
+      height:150px;
+    }
+   .btn {
+     width:150px;
+     height:150px;
+     background-image: url(../img/home_school.png);
+     color:white;
+     background-repeat: no-repeat;
+     padding-left: 21%;
+     padding-top:40%;
+     font-size:2em;
+     line-height:2em;
+     margin-top:30%;
+     margin-bottom:30%;
+     cursor:pointer;
+   }
+   #gameTips{
+    background-image: url("/static/img/blackboard.png");
+    background-repeat: no-repeat;
+    width: 582px;
+    height: 450px;
+   }
+   .gameTips-p{
+    padding-left:70px; 
+    padding-top: 150px;
+    padding-right: 200px;
+    font: 20px sans-serif;
+   }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+    <div id="inp">
+      <div id="tx">
+        <textarea  id="ta" cols="38" rows="8" v-model='taValue'></textarea>
+        <div id="gameTips">
+         <p class="gameTips-p">{{gameTips}}</p>
+
+        </div>
+      </div>
+      <div id="button">
+        <div class="btn" v-clock>
+          <a @click="start" v-clock>{{runName}}</a>
+        </div>
+        </br>
+        <div class="btn" v-clock>
+          <a @click="reset" v-clock>reset</a>
+        </div>
+      </div>
+      <el-dialog
+      class="game-dialog"
+      title="通关提醒"
+      :visible.sync="sussessDialogVisible"
+      width="30%">
+      <div class="star-area"  v-clock>
+        <div class="g-star-img first-star"><img src="/static/img/g_star.png" alt=""></div>
+        <div class="g-star-img second-star"><img src="/static/img/g_star.png" alt=""></div>
+        <div class="g-star-img third-star"><img src="/static/img/g_star.png" alt=""></div>
+        <div v-show="fStar==true" class="animated flip y-star-img first-star" ><img src="/static/img/y_star.png" alt="" ></div>
+        <div v-show="sStar==true" class="animated flip y-star-img second-star"><img src="/static/img/y_star.png" alt=""></div>
+        <div v-show="tStar==true" class="animated flip y-star-img third-star"><img src="/static/img/y_star.png" alt=""></div>
+      </div>
+      <span slot="footer" class="dialog-footer">
+          <el-button @click="gameReset" v-clock>重新开始</el-button>
+          <el-button type="primary" @click="nextLevel" v-clock>下一关</el-button>
+        </span>
+      </el-dialog>
+      <el-dialog
+      class="game-dialog"
+      title="失败提醒"
+      :visible.sync="falseDialogVisible"
+      width="30%">
+        <div class="fail-area"  v-clock>
+          <div v-show="fStar==false" class="animated flip g-star-img"><img src="/static/img/g_star.png" alt=""></div>
+          <div v-show="sStar==false" class="animated flip g-star-img"><img src="/static/img/g_star.png" alt=""></div>
+          <div v-show="tStar==false" class="animated flip g-star-img"><img src="/static/img/g_star.png" alt=""></div>
+          <p v-clock>你失败了....</p>
+          <p v-clock>提示：{{errorTips}}</p>
+        </div>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="gameReset" v-clock>再尝试一下吧</el-button>
+        </span>
+      </el-dialog>
+      <el-dialog
+      class="game-dialog"
+      title="试玩结束提醒"
+      :visible.sync="tryOverDialogVisible"
+      width="30%">
+        <div class="tryOver-area">
+            <p v-clock>你的试玩已经结束啦！您在首页可以选择再次试玩或者登录一下</p>
+        </div>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="returnBackHome" v-clock>立即返回首页</el-button>
+        </span>
+      </el-dialog>
+    </div>
+
+
+<script>
+
+var game = new Phaser.Game(600,720,Phaser.AUTO,'container',loadState);
+  //当前关卡
+  if(sessionStorage.levelNum){
+	var levelNum = sessionStorage.levelNum;
+  }else{
+    var levelNum = 0;
+  }
+
+  var runObj = null;
+  var panda = {
+    obj:null,
+    walk : null
+  }
+  var turtle = {
+    obj : null,
+    walk : null,
+    xOnoff : false,
+    awayX : 0,
+    awayY : 0,
+    rOnoff : false,
+    awayR : 0,
+    stepOnoff : false
+  }
+  var arr;
+  var island;
+  var aa;
+  var bb;
+  var walk;
+  var drown;
+  var ruler;
+  var rulerBase;
+  var banana;
+  var bridge;
+  var disObj;
+  var circle;
+  var pointer;
+  var inputDis;                //用户输入的距离(绝对值)
+  var inputSym;                //用户输入距离的符号
+  var x;                       //储存x坐标
+  var y;                       //储存y坐标
+  var num = 0;                 //执行每行代码计数
+  var colliOnoff = false;      //灌木碰撞检测开关
+  var overlOnoff = true;       //香蕉碰撞检测开关
+  var rulerOnoff = false;
+  var disOnoff = false;
+  var lineOnoff = false;       //每行代码执行开关
+  var conStepOnoff = false;    //停止step的监控开关
+  var bananaOnoff = true;
+  var testOnoff = false;       //代码执行后判断开关
+  var runOnoff = false;        //代码是否执行标志
+  var soundManager;
+  var eatAudio;
+  var walkAudio;
+
+  game.state.add('loadState',loadState);
+  game.state.add('state',state);
+  //game.state.start('one');
+
+  var vm = new Vue({
+    el:'#inp',
+    data:{
+      taValue:'',
+      gameTips:'',
+      runName:'start',
+	    errorTips:'',	  
+      sussessDialogVisible:false,
+      falseDialogVisible:false,
+      tryOverDialogVisible:false,
+      fStar:false,
+      sStar:false,
+      tStar:false,
+      alreadyPlay:false  //用于标志当前关卡有玩过，false为没有
+    },
+    created(){
+      // if(levelNum != sessionStorage.currentPassChapter){
+      //   if(sessionStorage.chapterCode){
+      //     //已经登录了，存在sessionStorage.chapterCode，就修改this.taValue为用户已经提交的代码
+      //     this.taValue = sessionStorage.chapterCode;
+      //   }
+      // }else if(levelNum == sessionStorage.currentPassChapter){
+      //   this.taValue = taValueArr[currentPassChapter];
+      // }
+
+      // if(!sessionStorage.username){
+      //    //没有登录，不存在sessionStorage.chapterCode，就让this.taValue为初始设置值
+      //    this.taValue = taValueArr[parseInt(levelNum)];
+      // }
+      if(sessionStorage.chapterCode != ''){
+          //已经登录了，存在sessionStorage.chapterCode，就修改this.taValue为用户已经提交的代码
+          this.taValue = sessionStorage.chapterCode;
+      }else{
+        //没有登录，不存在sessionStorage.chapterCode或者sessionStorage.chapterCode为空，就让this.taValue为初始设置值
+         this.taValue = taValueArr[parseInt(levelNum)];
+      }
+      this.gameTips = courseArr[parseInt(levelNum)].course;
+      this.errorTips = courseArr[parseInt(levelNum)].errorTips;
+
+    },
+    beforeUpdate(){
+      //删除弹出框的button按钮
+      $('.game-dialog .el-dialog__headerbtn').remove();
+    },
+    methods:{
+      start(){
+
+        if(runOnoff == false){
+          num = 0;
+          runOnoff = true;
+          this.runName = 'stop';
+          codeArr('ta');
+        }else{
+          num = 0;                 //执行每行代码计数
+          panda.obj.body.velocity.set(0,0);
+          if(turtle.obj){
+            turtle.obj.body.velocity.set(0,0);
+          }
+          colliOnoff = false;      //灌木碰撞检测开关
+          overlOnoff = true;       //香蕉碰撞检测开关
+          conStepOnoff = false;    //停止step的监控开关
+          bananaOnoff = true;
+          lineOnoff = false;
+          testOnoff = false;       //代码执行后判断开关
+          turtle.rOnoff = false;
+          turtle.xOnoff = false;
+          turtle.stepOnoff = false;
+          soundManager.stopAll();
+          rebulidObj();
+          runOnoff = false;        //代码是否执行标志
+          vm.runName = 'start';
+        }
+      },
+      reset(){
+        this.taValue = taValueArr[levelNum];
+        rebulidObj();
+      },
+      gameReset(){
+        this.runName = 'start';
+        rebulidObj();
+        this.fStar = false;
+        this.sStar = false;
+        this.tStar = false;
+        this.sussessDialogVisible = false;
+        this.falseDialogVisible = false;
+      },
+      returnBackHome(){
+        this.tryOverDialogVisible = false;
+		    window.parent.location = "/";
+      },
+      nextLevel(){
+        
+        //如果登录了,跳转到下一关之前就保存代码
+        if(sessionStorage.username){
+          //关卡之前是否玩过了
+          if(sessionStorage.currentPassChapter > levelNum){
+            this.alreadyPlay = true;
+          }else{
+            this.alreadyPlay = false;
+          }
+		      //保存代码
+			    $.ajax({
+					  type: "post",
+					  url: "/Info/saveCode",
+					  data: {username: sessionStorage.username, role: sessionStorage.role, chapter: levelNum, chapterCode: this.taValue, star: sessionStorage.star,alreadyPlay:this.alreadyPlay},
+					  dataType: "json",
+					  success: function(data){
+						  if(data.status == '1'){
+								console.log(data.msg);
+								//将sessionStorage中的星星数目更新
+								sessionStorage.star = data.star;
+						  }
+					  },
+					  error:function(err){
+					    console.log(err);
+					  }
+			    });
+        }
+		    //如果没有登录，且关卡数大于4关，就要弹出试玩的关卡已结束，跳回首页。
+		    if(!sessionStorage.username && levelNum > 4){
+           this.sussessDialogVisible = false;
+           //8s之后跳转到首页
+           setTimeout('window.parent.location = "/"',8000);
+           this.tryOverDialogVisible = true;
+
+
+        }
+
+        //levelNum从sessionStorage中读取到的话肯定是字符串类型，要转成数字类型
+        var LNum = parseInt(levelNum) + 1;
+        this.taValue = taValueArr[LNum];
+        levelNum++;
+        //改变父页面的导航栏
+        var papa = window.parent.document.getElementById("level").getElementsByTagName("span")[0];
+        papa.innerHTML = levelNum;
+        closeOnoff();
+        if(turtle.obj){
+          turtle.obj = null;
+        }
+        game.state.remove('state');
+        game.state.add('state',state);
+        game.state.start('loadState');
+        this.fStar = false;
+        this.sStar = false;
+        this.tStar = false;
+        this.sussessDialogVisible = false;
+        sessionStorage.levelNum = levelNum;
+      },
+
+    }
+  })
+
+</script>
+</body>
+</html>
