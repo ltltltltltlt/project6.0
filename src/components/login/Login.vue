@@ -61,7 +61,7 @@ export default {
 	    var isRem = this.form.isRem
       var reg=/^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/   //邮箱正则表达式
       var reg1= /^[a-zA-Z0-9_-]+$/       //密码验证表达式
-      if(email.trim() && pwd.trim() &&email.trim().length>6 && pwd.trim().length>6){
+      if(email.trim() && pwd.trim() &&email.trim().length>=6 && pwd.trim().length>=6){
           if(!reg.test(email)){
             this.form.emailError = '邮箱格式错误'
             return false
