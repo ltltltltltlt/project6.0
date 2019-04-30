@@ -110,7 +110,7 @@ var sqlMap = {
         getClassNameByusername_Sql : "SELECT className FROM class WHERE username = ?",
 
         //根据教室名得到教室里面学员信息
-        getStudentInfoByClassName_Sql : "SELECT * FROM student WHERE username IN (SELECT studentName FROM class WHERE className = ?)",
+        getStudentInfoByClassName_Sql : "SELECT * FROM student WHERE username IN (SELECT username FROM class WHERE className = ?)",
 
         //根据教室名插入相应的学生
         insertClassNameStudentName_Sql : "INSERT INTO class(className, username) VALUES(?,?)",
